@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="wh-jvm-1.0-SNAPSHOT">
+    <output-path>$PROJECT_DIR$/build/libs</output-path>
+    <root id="archive" name="wh-jvm-1.0-SNAPSHOT.jar">
+      <element id="module-output" name="wh.jvmMain" />
+    </root>
+  </artifact>
+</component>
