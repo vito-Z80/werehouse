@@ -4,14 +4,41 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import tables.insertRowDialog
 import tables.steelRope
+import java.util.TreeSet
+
 
 @Composable
 fun tables() {
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        steelRope()
+        when (selectedDBTable) {
+            STEEL_ROPE_TABLE -> {
+                steelRope()
+                println("rope table")
+            }
+
+            LIST_TABLE -> {
+                println("lists table")
+            }
+        }
     }
 
     insertRowDialog("steelRope")
+
+}
+
+
+class AppTable {
+
+    val names = ArrayList<String>()
+    val fields = ArrayList<TreeSet<String>>()
+
+    fun addTable(tableName: String, vararg fields: String) {
+
+    }
+
+    fun addField(tableName: String, field: String) {
+
+    }
 
 }
