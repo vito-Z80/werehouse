@@ -10,7 +10,7 @@ val SQL_SELECT = { tableName: String, fields: List<String> ->
     "SELECT $f FROM $tableName"
 }
 
-const val DB_NAME = "wh.db"
+const val DB_NAME = "wh"
 const val STEEL_ROPE_TABLE = "steelRope"
 const val LIST_TABLE = "listRope"
 

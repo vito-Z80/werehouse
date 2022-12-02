@@ -10,8 +10,17 @@ import topMenu.topMenu
 @Composable
 fun App() {
 
+    var onceForStart by remember { mutableStateOf(true) }
 
-
+    LaunchedEffect(onceForStart) {
+        kotlin.runCatching {
+            if (onceForStart) {
+                onceForStart = false
+                DB.create(DB_NAME, closed = true)
+                DB.createTable(selectedDB, selectedDBTable)
+            }
+        }
+    }
 
     MaterialTheme {
 
@@ -21,11 +30,7 @@ fun App() {
 }
 
 fun main() = application {
-    DB.create(DB_NAME)
-    DB.createTable(selectedDBTable)
-//    DB.createTable(LIST_TABLE)
-    DB.selectFrom(selectedDBTable)
-    DB.close()
+
     Window(onCloseRequest = ::exitApplication) {
         App()
     }

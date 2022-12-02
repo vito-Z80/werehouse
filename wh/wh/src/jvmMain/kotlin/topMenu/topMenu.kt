@@ -12,8 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import windowConfirm
-import windowConfirmState
 
 @Composable
 fun topMenu() {
@@ -21,6 +19,8 @@ fun topMenu() {
     val expandCardDialog = remember { mutableStateOf(false) }
     val expandProductPopup = remember { mutableStateOf(false) }
     val expandDBPopup = remember { mutableStateOf(false) }
+    val expandTest = remember { mutableStateOf(false) }
+
 
     Row(
         modifier = Modifier.fillMaxWidth()
@@ -35,12 +35,15 @@ fun topMenu() {
             .padding(4.dp)
         )//.apply { popupFileMenu(expandFileDialog) }
 
-        Text(text = "Card", modifier = Modifier
-            .clickable {
-                expandCardDialog.value = true
-            }
-            .padding(4.dp)
-        )//.apply { popupCardMenu(expandCardDialog) }
+        Box {
+            Text(text = "Test", modifier = Modifier
+                .clickable {
+                    expandTest.value = true
+                }
+                .padding(4.dp)
+            )
+            testPopup(expandTest)
+        }
         Box {
             Text(text = "Товар", modifier = Modifier
                 .clickable {

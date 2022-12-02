@@ -10,21 +10,26 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import insertRowDialogSate
+import selectedDB
+import selectedDBTable
 import tableResult
 
 @Composable
 fun steelRope() {
     val hScroll by remember { mutableStateOf(ScrollState(0)) }
+
+    LaunchedEffect(selectedDBTable){
+        DB.selectFrom(selectedDB, selectedDBTable)
+//        DB.insertTo(selectedDB,selectedDBTable, DBField.values)
+    }
+
 
     Column(modifier = Modifier.fillMaxHeight().fillMaxWidth().padding(4f.dp)) {
         Divider(color = Color.DarkGray)

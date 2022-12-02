@@ -15,7 +15,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
+import input.input
 import insertRowDialogSate
+import selectedDB
 import selectedDBTable
 
 @Composable
@@ -32,7 +34,7 @@ fun insertRowDialog(tableName: String) {
             onCloseRequest = { insertRowDialogSate = false },
             resizable = false,
             state = WindowState(width = 512f.dp, height = 300f.dp),
-            title = "Add row."
+            title = "Add row.",
         ) {
             Column(modifier = Modifier.padding(4f.dp)) {
                 insertRowContent()
@@ -71,14 +73,7 @@ private fun insertRowInput(labelName: String, format: Int) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(text = labelName, modifier = Modifier.padding(start = 4f.dp))
-        BasicTextField(
-            value = value.value,
-            onValueChange = { value.value = it },
-            maxLines = 1,
-            modifier = Modifier.requiredWidth(96f.dp).requiredHeight(20f.dp).border(width = 1f.dp, color = Color.Blue)
-                .padding(2f.dp)
-                .align(Alignment.CenterHorizontally)
-        )
+        input(value)
     }
 
 }
@@ -95,7 +90,7 @@ private fun confirm() {
                 Text(text = "Cancel")
             }
             TextButton(onClick = {
-                DB.insertTo(selectedDBTable, DBField.values)
+                DB.insertTo(selectedDB,selectedDBTable, DBField.values)
                 insertRowDialogSate = false
             }) {
                 Text(text = "Add")
