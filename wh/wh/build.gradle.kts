@@ -29,6 +29,7 @@ kotlin {
                 implementation(compose.desktop.windows_x64)
                 implementation("com.google.code.gson:gson:2.10")
                 implementation("org.xerial:sqlite-jdbc:3.39.3.0")
+                implementation("org.jetbrains.kotlin:kotlin-reflect:1.7.21")
             }
         }
         val jvmTest by getting

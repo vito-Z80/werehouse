@@ -1,17 +1,14 @@
 package topMenu
 
 import DB
-import androidx.compose.foundation.layout.Box
-import androidx.compose.material.Divider
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Text
+import DBField
+import androidx.compose.foundation.clickable
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInWindow
 import selectedDB
 import selectedDBTable
+import windows.createDbWindow
 import windows.newDBWindow
 import windows.newTableDBWindow
 import java.io.File
@@ -75,6 +72,7 @@ fun testPopup(expand: MutableState<Boolean>) {
 
 //    var it1 by remember { mutableStateOf(false) }
     val showDBNamesState = remember { mutableStateOf(false) }
+    val showFieldsState = remember { mutableStateOf(false) }
 //    val showTableNamesState = remember { mutableStateOf(false) }
 
     var position = remember { Pair(0f, 0f) }
@@ -98,18 +96,40 @@ fun testPopup(expand: MutableState<Boolean>) {
     ) {
 
         DropdownMenuItem(onClick = { showDBNamesState.value = true }) {
-            Box(modifier = Modifier.onGloballyPositioned {
-                position = Pair(it.positionInWindow().x, it.positionInWindow().y)
-            }) {
-                Text("Базы данных")
-                showDBNames(showDBNamesState, dbNames)
-
-            }
+            Text("Базы данных")
+            showDBNames(showDBNamesState, dbNames)
         }
+        DropdownMenuItem(onClick = { showFieldsState.value = true }) {
+            Text("Поля")
+            showFieldsSelection(showFieldsState)
+        }
+
 
     }
 
 
+}
+
+@Composable
+private fun showFieldsSelection(showFieldsState: MutableState<Boolean>) {
+
+    DropdownMenu(
+        expanded = showFieldsState.value,
+        onDismissRequest = {
+            showFieldsState.value = false
+        }
+    ) {
+        DBField.requestFields.forEach { field ->
+            DropdownMenuItem(onClick = {
+                field.second.value = !field.second.value
+            }) {
+                Checkbox(checked = field.second.value, onCheckedChange = {
+                    field.second.value = !field.second.value
+                })
+                Text(text = field.third)
+            }
+        }
+    }
 }
 
 
@@ -120,6 +140,7 @@ private fun showDBNames(
 ) {
 //    val selectedDBName = remember { mutableStateOf("") }
 
+    val newTable = remember { mutableStateOf(false) }
 
     DropdownMenu(
         expanded = showDBNamesState.value,
@@ -139,8 +160,11 @@ private fun showDBNames(
             }
         }
         Divider()
-        DropdownMenuItem(onClick = {}) {
+        DropdownMenuItem(onClick = {
+            newTable.value = true
+        }) {
             Text(text = "Создать БД")
+            createDbWindow(newTable)
         }
     }
 }

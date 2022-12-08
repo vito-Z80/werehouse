@@ -1,3 +1,4 @@
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.dp
 import kotlin.reflect.KProperty
@@ -46,7 +47,8 @@ object DBField {
         32f.dp, 64f.dp, 128f.dp, 80f.dp, 48f.dp, 48f.dp, 48f.dp, 48f.dp, 48f.dp, 48f.dp
     )
 
-    val requestFields: List<Pair<Any, String>> = list
+    val requestFields: List<Triple<Any, MutableState<Boolean>, String>> =
+        list.map { Triple(it.first, mutableStateOf(true), it.second) }
 
 
     val values = MutableList(list.size) { mutableStateOf("") }
