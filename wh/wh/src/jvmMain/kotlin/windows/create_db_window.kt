@@ -16,6 +16,7 @@ import androidx.compose.ui.window.Window
 import input.input
 import kotlin.jvm.internal.Intrinsics.Kotlin
 import kotlin.reflect.KType
+import kotlin.reflect.jvm.javaType
 import kotlin.reflect.typeOf
 
 @Composable
@@ -58,9 +59,8 @@ private fun newField() {
 private fun fieldType(fieldType: MutableState<KType>, fieldTypeVisible: MutableState<Boolean>) {
 
 
-    typeOf<FieldType>().arguments.forEach {
-        println(it.type)
-    }
+    println(FieldType.INT.second::class.java)
+    println(FieldType.INT.second is Int)
 
     DropdownMenu(expanded = fieldTypeVisible.value, onDismissRequest = {
         fieldTypeVisible.value = false
@@ -69,8 +69,8 @@ private fun fieldType(fieldType: MutableState<KType>, fieldTypeVisible: MutableS
         DropdownMenuItem(onClick = {
             println(FieldType.INT.second)
         }) {
-            Text(text = "${FieldType.INT.first} : ")
-            // TODO сменить версию котллина если не будет работать !!!!
+            Text(text = "${FieldType.INT.first} : ${FieldType.INT.second::class.java}")
+            // TODO сменить версию котлина если не будет работать !!!!
         }
 
         DropdownMenuItem(onClick = {
@@ -92,8 +92,8 @@ private fun fieldType(fieldType: MutableState<KType>, fieldTypeVisible: MutableS
 
 class FieldType {
     companion object {
-        val INT = Pair("Integer", typeOf<Int>())
-        val FLOAT = Pair("Float", typeOf<Float>())
-        val STRING = Pair("String", typeOf<String>())
+        val INT = Pair("Integer", Int.MIN_VALUE)
+        val FLOAT = Pair("Float", Float.MIN_VALUE)
+        val STRING = Pair("String", "")
     }
 }

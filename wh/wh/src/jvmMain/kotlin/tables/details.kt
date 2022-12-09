@@ -1,6 +1,9 @@
 package tables
 
 import DBField
+import DIAMETER
+import GOST
+import NUMBER
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,17 +32,49 @@ fun detail(rowIndex: MutableState<Int>) {
             Column {
                 println(rowIndex.value)
                 if (rowIndex.value >= 0) {
-                    inputValue(rowIndex.value, DBField.list.indexOfFirst { it.second.lowercase() == "диаметр" })
-                    inputValue(rowIndex.value, DBField.list.indexOfFirst { it.second.lowercase() == "номер" })
-                    inputValue(rowIndex.value, DBField.list.indexOfFirst { it.second.lowercase() == "гост" })
+                    inputValue(
+                        rowIndex.value,
+                        DBField.list.indexOfFirst { it.second.lowercase() == DIAMETER.lowercase() },
+                        Float.MAX_VALUE
+                    )
+                    inputValue(
+                        rowIndex.value,
+                        DBField.list.indexOfFirst { it.second.lowercase() == NUMBER.lowercase() },
+                        String.toString()
+                    )
+                    inputValue(
+                        rowIndex.value,
+                        DBField.list.indexOfFirst { it.second.lowercase() == GOST.lowercase() },
+                        String.toString()
+                    )
                 }
             }
         }
     }
 }
 
+
+
+
 @Composable
-private fun inputValue(rowIndex: Int, labelIndex: Int) {
+private inline fun <reified T> inputValue(rowIndex: Int, labelIndex: Int, t: T) {
+
+    println("------------------------")
+    println(t)
+    when (t) {
+        is Int -> {
+            println("INT: $t")
+        }
+
+        is String -> {
+            println("STRING: $t")
+        }
+
+        is Float -> {
+            println("FLOAT: $t")
+        }
+    }
+
     val text = remember { mutableStateOf(tableResult[rowIndex][labelIndex]) }
     Row(horizontalArrangement = Arrangement.Center) {
         Text(text = DBField.list[labelIndex].second)

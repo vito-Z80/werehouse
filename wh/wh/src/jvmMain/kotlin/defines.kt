@@ -15,19 +15,29 @@ const val DB_NAME = "wh"
 const val STEEL_ROPE_TABLE = "steelRope"
 const val LIST_TABLE = "listRope"
 
+const val ID = "ID"
+const val DIAMETER = "Диаметр"
+const val NUMBER = "Номер"
+const val GOST = "ГОСТ-ТУ"
+const val COMING = "Приход"
+const val LEFT = "Остаток"
+const val CONSUMER = "Потребитель"
+const val COMING_DATE = "Дата прихода"
+const val OUTGOING_DATE = "Дата отдачи"
+const val DETAILS = "Детали"
 
 object DBField {
 
-    val id = Pair(0, "ID")
-    val diameter = Pair(0f, "Диаметр")
-    val number = Pair("", "Номер")
-    val standard = Pair("", "ГОСТ")
-    val coming = Pair(0f, "Приход")
-    val left = Pair(0f, "Остаток")
-    val consumer = Pair("", "Потребитель")
-    val arrival = Pair(0, "Прибытие")
-    val expiration = Pair(0, "Завершение")
-    val details = Pair("", "Детали")
+    val id = Pair(0, ID)
+    val diameter = Pair(0f, DIAMETER)
+    val number = Pair("", NUMBER)
+    val standard = Pair("", GOST)
+    val coming = Pair(0f, COMING)
+    val left = Pair(0f, LEFT)
+    val consumer = Pair("", CONSUMER)
+    val arrival = Pair(0, COMING_DATE)
+    val expiration = Pair(0, OUTGOING_DATE)
+    val details = Pair("", DETAILS)
 
 
     val list = listOf(
@@ -41,10 +51,6 @@ object DBField {
         arrival,
         expiration,
         details
-    )
-
-    val size = listOf(
-        32f.dp, 64f.dp, 128f.dp, 80f.dp, 48f.dp, 48f.dp, 48f.dp, 48f.dp, 48f.dp, 48f.dp
     )
 
     val requestFields: List<Triple<Any, MutableState<Boolean>, String>> =
