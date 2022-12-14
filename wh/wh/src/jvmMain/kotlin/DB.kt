@@ -2,9 +2,20 @@ import androidx.compose.runtime.MutableState
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
-import kotlin.concurrent.thread
+
+
+
+////////    https://www.sqlitetutorial.net/sqlite-java/update/
 
 object DB {
+
+    private fun updateRequestById(tableName: String, fieldIndex: Int, fields: List<String>, data: List<Any>): String {
+        val str = ArrayList<String>()
+        fields.forEachIndexed { id, s ->
+            str.add("'$s' = ${data[id]}")
+        }
+        return """UPDATE $tableName SET ${str.joinToString()} WHERE $ID = $fieldIndex;""".trimMargin()
+    }
 
 
     private fun tableStr(tableName: String) = """CREATE TABLE IF NOT EXISTS $tableName (
@@ -17,7 +28,7 @@ object DB {
     ${DBField.consumer.second} text,
     ${DBField.arrival.second} integer,
     ${DBField.expiration.second} integer,
-    ${DBField.details.second} blob
+    ${DBField.details.second} json
 );"""
 
     private fun insertStr(tableName: String) =
@@ -77,12 +88,15 @@ object DB {
         }
     }
 
-    fun selectFrom(dbName: String, tableName: String, vararg fields: String) {
+    /*
+        Выбрать таблицу с нужными полями. Если поля не передаются - выбрать все поля.
+     */
+    fun selectFields(dbName: String, tableName: String, vararg fields: String) {
         connect(dbName).let {
             val statement = it?.createStatement()
             val selectResult = statement?.executeQuery(SQL_SELECT(tableName, fields.toList()))
 
-            val result = ArrayList<List<String>>()
+            val result = ArrayList<ArrayList<String>>()
             while (selectResult?.next() == true) {
                 val row = ArrayList<String>()
                 DBField.requestFields.forEachIndexed { id, pair ->
@@ -118,6 +132,15 @@ object DB {
 
     }
 
+    fun insertDefaultValues(dbName: String, tableName: String) {
+        val def = "INSERT INTO $tableName DEFAULT VALUES;"
+        connect(dbName).let {
+            it?.prepareStatement(def)?.executeUpdate()
+            it?.close()
+        }
+    }
+
+    // TODO переделать текстом как update ?
     fun insertTo(dbName: String, tableName: String, data: MutableList<MutableState<String>>) {
         connect(dbName).let {
             val pStat = it?.prepareStatement(insertStr(tableName))
@@ -131,4 +154,47 @@ object DB {
         }
     }
 
+
+    // https://www.sqlite.org/docs.html
+    fun updateById(dbName: String, tableName: String, index: Int, fields: List<String>, data: List<Any>) {
+        connect(dbName).let {
+            val ur = updateRequestById(tableName, index, fields, data)
+            println(ur)
+            val ps = it?.prepareStatement(ur)
+            ps?.executeUpdate()
+            ps?.close()
+            it?.close()
+            println("$dbName be updated succesfuly")
+        }
+
+        // TODO https://ru.stackoverflow.com/questions/682604/%D0%BA%D0%B0%D0%BA-%D0%BF%D1%80%D0%B0%D0%B2%D0%B8%D0%BB%D1%8C%D0%BD%D0%BE-%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2%D0%B8%D1%82%D1%8C-%D0%B7%D0%B0%D0%BF%D1%80%D0%BE%D1%81-jdbc-update
+    }
+
+
+}
+
+
+fun main() {
+
+
+//    val sql = "UPDATE $selectedDBTable SET `Диаметр` = ? WHERE ID = ?;"
+//    DB.connect("wh").let {
+//        val ps = it?.prepareStatement(sql)
+//        ps?.setFloat(1, 22.5f)
+//        ps?.setInt(2, 1)
+//        ps?.executeUpdate()
+//        it?.close()
+//    }
+//    return
+
+    val fields = listOf(DIAMETER, NUMBER, COMING)
+    val data = listOf(8.8f, "\"7777/23-03И\"", 1000f)
+//    DB.create(DB_NAME, closed = true)
+//    DB.createTable(selectedDB, selectedDBTable)
+
+
+    DB.updateById(selectedDB, selectedDBTable, 2, fields, data)
+
+//    val r = DB.updateRequest("afdas", 23, fields, data)
+//    println(r)
 }

@@ -26,6 +26,7 @@ const val COMING_DATE = "Дата прихода"
 const val OUTGOING_DATE = "Дата отдачи"
 const val DETAILS = "Детали"
 
+const val SEGMENT = "Отрезок"
 object DBField {
 
     val id = Pair(0, ID)

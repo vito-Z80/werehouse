@@ -7,7 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import insertRowDialogState
 import selectedDB
 import selectedDBTable
 import tableResult
@@ -25,7 +26,7 @@ fun steelRope() {
     val hScroll by remember { mutableStateOf(ScrollState(0)) }
 
     LaunchedEffect(selectedDBTable) {
-        DB.selectFrom(selectedDB, selectedDBTable)
+        DB.selectFields(selectedDB, selectedDBTable)
 //        DB.insertTo(selectedDB,selectedDBTable, DBField.values)
     }
 
@@ -79,6 +80,10 @@ fun steelRope() {
                 }
                 Divider(color = Color.DarkGray)
             }
+        }
+
+        Button(onClick = {insertRowDialogState = true}){
+            Text("ADD")
         }
         detail(detailsIndex)
     }
