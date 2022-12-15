@@ -4,7 +4,7 @@ import CONSUMER
 import DBField
 import DETAILS
 import DIAMETER
-import GOST
+import STANDARD
 import NUMBER
 import SEGMENT
 import androidx.compose.foundation.ScrollState
@@ -28,13 +28,6 @@ import verticalDivider
 
 @Composable
 fun detail(rowIndex: MutableState<Int>) {
-
-//    val diameter = tableResult[id.value]
-
-//    val diameterIndex = DBField.list.indexOfFirst { it.second.lowercase() == "диаметр" }
-    val numberIndex = DBField.list.indexOfFirst { it.second.lowercase() == "номер" }
-    val potrIndex = DBField.list.indexOfFirst { it.second.lowercase() == "потребитель" }
-
 
     val detailsGson = remember { mutableStateOf("") }
     val segments: MutableState<Seg?> = remember { mutableStateOf(null) }
@@ -95,7 +88,7 @@ fun detail(rowIndex: MutableState<Int>) {
                     )
                     inputValue(
                         rowIndex.value,
-                        DBField.list.indexOfFirst { it.second.lowercase() == GOST.lowercase() },
+                        DBField.list.indexOfFirst { it.second.lowercase() == STANDARD.lowercase() },
                         String.toString()
                     )
                 }

@@ -1,8 +1,8 @@
 import androidx.compose.runtime.*
 
 
-var selectedDBTable by mutableStateOf(STEEL_ROPE_TABLE)
-var selectedDB by mutableStateOf(DB_NAME)
+var selectedDBTable by mutableStateOf("")
+var selectedDB by mutableStateOf("")
 
 var insertRowDialogState by mutableStateOf(false)
 

@@ -1,6 +1,5 @@
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.unit.dp
 import kotlin.reflect.KProperty
 
 
@@ -18,8 +17,8 @@ const val LIST_TABLE = "listRope"
 const val ID = "ID"
 const val DIAMETER = "Диаметр"
 const val NUMBER = "Номер"
-const val GOST = "ГОСТ-ТУ"
-const val COMING = "Приход"
+const val STANDARD = "ГОСТ-ТУ"
+const val AMOUNT = "Количество"
 const val LEFT = "Остаток"
 const val CONSUMER = "Потребитель"
 const val COMING_DATE = "Дата прихода"
@@ -32,8 +31,8 @@ object DBField {
     val id = Pair(0, ID)
     val diameter = Pair(0f, DIAMETER)
     val number = Pair("", NUMBER)
-    val standard = Pair("", GOST)
-    val coming = Pair(0f, COMING)
+    val standard = Pair("", STANDARD)
+    val coming = Pair(0f, AMOUNT)
     val left = Pair(0f, LEFT)
     val consumer = Pair("", CONSUMER)
     val arrival = Pair(0, COMING_DATE)

@@ -11,19 +11,22 @@ import java.util.TreeSet
 fun tables() {
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        when (selectedDBTable) {
-            STEEL_ROPE_TABLE -> {
-                steelRope()
-                println("rope table")
-            }
-
-            LIST_TABLE -> {
-                println("lists table")
-            }
+        if (selectedDBTable.isNotEmpty()) {
+            steelRope()
         }
+//        when (selectedDBTable) {
+//            STEEL_ROPE_TABLE -> {
+//                steelRope()
+//                println("rope table")
+//            }
+//
+//            LIST_TABLE -> {
+//                println("lists table")
+//            }
+//        }
     }
 
-    insertRowDialog("steelRope")
+    insertRowDialog()
 
 }
 

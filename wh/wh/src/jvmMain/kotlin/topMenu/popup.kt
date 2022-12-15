@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import selectedDB
 import selectedDBTable
+import tables.createTableDialog
 import windows.createDbWindow
 import windows.newDBWindow
 import windows.newTableDBWindow
@@ -177,6 +178,7 @@ private fun showTableNames(
 ) {
 
     var dbTables by remember { mutableStateOf(listOf<String>()) }
+    val newTableNameDialog = remember { mutableStateOf(false) }
 //    var showTableNamesState by remember { mutableStateOf(false) }
 
     LaunchedEffect(showTableNamesState.value) {
@@ -201,11 +203,11 @@ private fun showTableNames(
         Divider()
         DropdownMenuItem(onClick = {
             showTableNamesState.value = false
+            newTableNameDialog.value = true
         }) {
-            Text(text = "Добавить таблицу")
+            Text(text = "Создать таблицу")
 
         }
     }
-
-
+    createTableDialog(newTableNameDialog)
 }

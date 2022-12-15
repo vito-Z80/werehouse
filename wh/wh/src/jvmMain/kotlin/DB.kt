@@ -1,15 +1,15 @@
-import androidx.compose.runtime.MutableState
+import tables.Edit
+import tables.insertFields
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
-
 
 
 ////////    https://www.sqlitetutorial.net/sqlite-java/update/
 
 object DB {
 
-    private fun updateRequestById(tableName: String, fieldIndex: Int, fields: List<String>, data: List<Any>): String {
+    private fun updateSqlById(tableName: String, fieldIndex: Int, fields: List<String>, data: List<Any>): String {
         val str = ArrayList<String>()
         fields.forEachIndexed { id, s ->
             str.add("'$s' = ${data[id]}")
@@ -17,33 +17,32 @@ object DB {
         return """UPDATE $tableName SET ${str.joinToString()} WHERE $ID = $fieldIndex;""".trimMargin()
     }
 
+    private fun lastRowSql(tableName: String) = "SELECT * FROM $tableName ORDER BY $ID DESC LIMIT 1;"
 
-    private fun tableStr(tableName: String) = """CREATE TABLE IF NOT EXISTS $tableName (
+    private fun insertSql(tableName: String, fieldNames: List<String>, values: List<String>): String {
+        val str = ArrayList<String>()
+        fieldNames.forEach {
+            str.add("`$it`")
+        }
+        return """INSERT INTO $tableName (${str.joinToString()}) VALUES(${values.joinToString()});""".trimMargin()
+    }
+
+    private fun createTableSql(tableName: String) = """CREATE TABLE IF NOT EXISTS $tableName (
 	${DBField.id.second} integer PRIMARY KEY,
-    ${DBField.diameter.second} real,
-    ${DBField.number.second} text,
-    ${DBField.standard.second} text,
-    ${DBField.coming.second} real,
-    ${DBField.left.second} real,
-    ${DBField.consumer.second} text,
-    ${DBField.arrival.second} integer,
-    ${DBField.expiration.second} integer,
-    ${DBField.details.second} json
+    `${DBField.diameter.second}` real,
+    `${DBField.number.second}` text,
+    `${DBField.standard.second}` text,
+    `${DBField.coming.second}` real,
+    `${DBField.left.second}` real,
+    `${DBField.consumer.second}` text,
+    `${DBField.arrival.second}` integer,
+    `${DBField.expiration.second}` integer,
+    `${DBField.details.second}` json
 );"""
 
-    private fun insertStr(tableName: String) =
-        """INSERT INTO 
-            $tableName(${DBField.diameter.second},
-            ${DBField.number.second},
-            ${DBField.standard.second},
-            ${DBField.coming.second},
-            ${DBField.left.second},
-            ${DBField.consumer.second},
-            ${DBField.arrival.second},
-            ${DBField.expiration.second},
-            ${DBField.details.second}) VALUES(?,?,?,?,?,?,?,?,?)""".trimMargin()
 
-    private const val createStr = "jdbc:sqlite:"
+
+    private const val driver = "jdbc:sqlite:"
 
 
     fun connect(dbName: String, closed: Boolean = false) = create(dbName, closed)
@@ -51,7 +50,7 @@ object DB {
 
     fun create(dbName: String, closed: Boolean = false): Connection? {
         return try {
-            val connection = DriverManager.getConnection("${createStr}$dbName.db")
+            val connection = DriverManager.getConnection("${driver}$dbName.db")
             val meta = connection?.metaData
             println("Driver: ${meta?.driverName}")
             println("БД \"$dbName\" была создана или уже существует.")
@@ -70,8 +69,9 @@ object DB {
     fun createTable(dbName: String, tableName: String) {
         connect(dbName).let {
             val stat = it?.createStatement()
-            stat?.execute(tableStr(tableName))
+            stat?.execute(createTableSql(tableName))
             it?.close()
+            selectedDBTable = tableName
         }
     }
 
@@ -89,7 +89,7 @@ object DB {
     }
 
     /*
-        Выбрать таблицу с нужными полями. Если поля не передаются - выбрать все поля.
+        Выбрать таблицу с нужными полями. Если поля не заданы - выбрать все поля.
      */
     fun selectFields(dbName: String, tableName: String, vararg fields: String) {
         connect(dbName).let {
@@ -126,7 +126,7 @@ object DB {
                 result.add(row)
             }
             tableResult = result
-            println("Select [$dbName | $tableName] ${fields.joinToString()}")
+//            println("Select [$dbName | $tableName] ${fields.joinToString()}")
             it?.close()
         }
 
@@ -140,16 +140,21 @@ object DB {
         }
     }
 
-    // TODO переделать текстом как update ?
-    fun insertTo(dbName: String, tableName: String, data: MutableList<MutableState<String>>) {
+    /*
+        Только для объекта Edit in (insertRowDialog)
+     */
+    fun insert(dbName: String, tableName: String) {
         connect(dbName).let {
-            val pStat = it?.prepareStatement(insertStr(tableName))
-            data.drop(1).forEachIndexed { id, k ->
-                // TODO роверять тип, вызывать предупреждение при неправильном типе введенных данных и не обновлять БД.
-                pStat?.setString(id + 1, k.value)
-            }
-            pStat?.executeUpdate()
-//            selectFrom(dbName, selectedDBTable)
+            val values = listOf(
+                Edit.diameter.value,
+                "\"${Edit.number.value}\"",
+                "\"${Edit.standard.value}\"",
+                Edit.amount.value
+            )
+            val sql = insertSql(tableName, insertFields, values)
+            println(sql)
+            val ps = it?.prepareStatement(sql)
+            ps?.executeUpdate()
             it?.close()
         }
     }
@@ -158,7 +163,7 @@ object DB {
     // https://www.sqlite.org/docs.html
     fun updateById(dbName: String, tableName: String, index: Int, fields: List<String>, data: List<Any>) {
         connect(dbName).let {
-            val ur = updateRequestById(tableName, index, fields, data)
+            val ur = updateSqlById(tableName, index, fields, data)
             println(ur)
             val ps = it?.prepareStatement(ur)
             ps?.executeUpdate()
@@ -187,7 +192,7 @@ fun main() {
 //    }
 //    return
 
-    val fields = listOf(DIAMETER, NUMBER, COMING)
+    val fields = listOf(DIAMETER, NUMBER, AMOUNT)
     val data = listOf(8.8f, "\"7777/23-03И\"", 1000f)
 //    DB.create(DB_NAME, closed = true)
 //    DB.createTable(selectedDB, selectedDBTable)
