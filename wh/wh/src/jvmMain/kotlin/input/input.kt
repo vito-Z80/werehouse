@@ -82,10 +82,11 @@ fun inputSegmentConfirm(
 }
 
 
-
-
+/**
+ * Ввод имени БД или таблицы. Разрешено только: латиница и цифры.
+ */
 @Composable
-fun inputNewTableName(
+fun inputName(
     text: MutableState<String>,
     borderColorState: () -> Boolean = { false },
     keyboardOptions: KeyboardOptions = KeyboardOptions(),

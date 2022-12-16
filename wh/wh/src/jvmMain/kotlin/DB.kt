@@ -1,5 +1,5 @@
-import tables.Edit
-import tables.insertFields
+import windows.Edit
+import windows.insertFields
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
@@ -57,7 +57,7 @@ object DB {
             if (closed) {
                 connection?.close()
             }
-            selectedDB = dbName
+//            selectedDB = dbName
             connection
         } catch (e: SQLException) {
             println("ОШИБКА создания БД.")
@@ -71,11 +71,12 @@ object DB {
             val stat = it?.createStatement()
             stat?.execute(createTableSql(tableName))
             it?.close()
+            selectedDB = dbName
             selectedDBTable = tableName
         }
     }
 
-    fun showTables(dbName: String): List<String> {
+    fun tableNames(dbName: String): List<String> {
         connect(dbName).let {
             val statement = it?.createStatement()
             val list = statement?.executeQuery(SQL_SHOW_TABLE_NAMES)
@@ -167,9 +168,9 @@ object DB {
             println(ur)
             val ps = it?.prepareStatement(ur)
             ps?.executeUpdate()
-            ps?.close()
+//            ps?.close()
             it?.close()
-            println("$dbName be updated succesfuly")
+            println("$dbName be updated")
         }
 
         // TODO https://ru.stackoverflow.com/questions/682604/%D0%BA%D0%B0%D0%BA-%D0%BF%D1%80%D0%B0%D0%B2%D0%B8%D0%BB%D1%8C%D0%BD%D0%BE-%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2%D0%B8%D1%82%D1%8C-%D0%B7%D0%B0%D0%BF%D1%80%D0%BE%D1%81-jdbc-update

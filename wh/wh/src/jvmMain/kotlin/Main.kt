@@ -10,17 +10,17 @@ import topMenu.topMenu
 @Composable
 fun App() {
 
-    var onceForStart by remember { mutableStateOf(true) }
-
-    LaunchedEffect(onceForStart) {
-        kotlin.runCatching {
-            if (onceForStart) {
-                onceForStart = false
-                DB.create(DB_NAME, closed = true)
-                DB.createTable(selectedDB, selectedDBTable)
-            }
-        }
-    }
+//    var onceForStart by remember { mutableStateOf(true) }
+//
+//    LaunchedEffect(onceForStart) {
+//        kotlin.runCatching {
+//            if (onceForStart) {
+//                onceForStart = false
+//                DB.create(DB_NAME, closed = true)
+//                DB.createTable(selectedDB, selectedDBTable)
+//            }
+//        }
+//    }
 
     MaterialTheme {
 

@@ -1,9 +1,10 @@
 @file:OptIn(ExperimentalComposeUiApi::class)
 
-package tables
+package windows
 
+import DB
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
@@ -16,37 +17,30 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.WindowPosition
-import androidx.compose.ui.window.WindowState
-import input.inputNewTableName
+import androidx.compose.ui.window.Dialog
+import divider
+import input.inputName
 import input.regEngDigOnly
-import selectedDB
 
 
-private val newTableName = mutableStateOf("")
+private val newDBName = mutableStateOf("")
 
 @Composable
-fun createTableDialog(isVisible: MutableState<Boolean>) {
+fun createDatabaseDialog(isVisible: MutableState<Boolean>) {
 
 
     if (isVisible.value) {
-        Window(
+        Dialog(
             onKeyEvent = {
                 isVisible.value = it.key != Key.Escape
                 false   // if FASLE > TAB key working, else: TAB key not working
             },
             onCloseRequest = { isVisible.value = false },
             resizable = false,
-            state = WindowState(
-                width = 512f.dp,
-                height = 256.dp,
-                position = WindowPosition(alignment = Alignment.Center)
-            ),
             undecorated = true,
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(8f.dp),
+                modifier = Modifier.border(width = 1f.dp, color = Color.Black).fillMaxWidth().fillMaxHeight().padding(8f.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
@@ -58,14 +52,14 @@ fun createTableDialog(isVisible: MutableState<Boolean>) {
             }
         }
     } else {
-        newTableName.value = ""
+        newDBName.value = ""
     }
 }
 
 @Composable
 private fun title() {
     Row {
-        Text(text = "Создать новую таблицу для БД `$selectedDB`")
+        Text(text = "Создать новую Базу Данных")
     }
 
 }
@@ -73,8 +67,8 @@ private fun title() {
 @Composable
 private fun content() {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = "Имя новой таблицы")
-        inputNewTableName(newTableName, { !newTableName.value.contains(regEngDigOnly) })
+        Text(text = "Имя новой Базы Данных")
+        inputName(newDBName, { !newDBName.value.contains(regEngDigOnly) })
     }
 
 }
@@ -86,18 +80,12 @@ private fun confirm(isVisible: MutableState<Boolean>) {
         TextButton(onClick = { isVisible.value = false }) {
             Text(text = "Отмена")
         }
-        TextButton(enabled = !newTableName.value.contains(regEngDigOnly), onClick = {
-            DB.createTable(selectedDB, newTableName.value)
+        TextButton(enabled = !newDBName.value.contains(regEngDigOnly) || newDBName.value.isNotEmpty(), onClick = {
+            DB.create(newDBName.value)
             isVisible.value = false
         }) {
             Text(text = "Создать")
         }
     }
 
-}
-
-
-@Composable
-private fun divider(width: Float, color: Color = Color.DarkGray) {
-    Divider(modifier = Modifier.fillMaxWidth(width), color = color)
 }

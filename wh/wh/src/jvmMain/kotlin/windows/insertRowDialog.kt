@@ -1,10 +1,9 @@
 @file:OptIn(ExperimentalComposeUiApi::class)
 
-package tables
+package windows
 
 import AMOUNT
 import DB
-import DBField
 import DIAMETER
 import NUMBER
 import STANDARD
@@ -23,9 +22,7 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.WindowPosition
-import androidx.compose.ui.window.WindowState
+import androidx.compose.ui.window.Dialog
 import input.input
 import insertRowDialogState
 import kotlinx.coroutines.*
@@ -70,22 +67,18 @@ fun insertRowDialog() {
 
 
     if (insertRowDialogState) {
-        Window(
+        Dialog(
             onKeyEvent = {
                 insertRowDialogState = it.key != Key.Escape
                 false   // if FASLE > TAB key working, else: TAB key not working
             },
             onCloseRequest = { insertRowDialogState = false },
             resizable = false,
-            state = WindowState(
-                width = 512f.dp,
-                height = 256.dp,
-                position = WindowPosition(alignment = Alignment.Center)
-            ),
             undecorated = true,
         ) {
             Column(
-                modifier = Modifier.border(width = 1f.dp, color = Color.Black).fillMaxHeight().padding(4f.dp),
+                modifier = Modifier.border(width = 1f.dp, color = Color.Black).fillMaxWidth().fillMaxHeight()
+                    .padding(4f.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -98,7 +91,6 @@ fun insertRowDialog() {
         }
     } else {
         Edit.reset()
-        println("CLOSE")
     }
 }
 
@@ -157,8 +149,6 @@ private fun confirmContent() {
         TextButton(enabled = confirmButtonEnabled.value, onClick = {
             insertRowDialogState = false
             DB.insert(selectedDB, selectedDBTable)
-//                DB.insertTo(selectedDB,selectedDBTable, DBField.values)
-//            DB.insertDefaultValues(selectedDB, selectedDBTable)
             DB.selectFields(selectedDB, selectedDBTable)
         }) {
             Text(text = "Add")

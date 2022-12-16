@@ -17,9 +17,8 @@ import selectedDBTable
 @Composable
 fun topMenu() {
     val expandFileDialog = remember { mutableStateOf(false) }
-    val expandCardDialog = remember { mutableStateOf(false) }
-    val expandProductPopup = remember { mutableStateOf(false) }
-    val expandDBPopup = remember { mutableStateOf(false) }
+//    val expandProductPopup = remember { mutableStateOf(false) }
+//    val expandDBPopup = remember { mutableStateOf(false) }
     val expandTest = remember { mutableStateOf(false) }
 
 
@@ -45,32 +44,32 @@ fun topMenu() {
             )
             testPopup(expandTest)
         }
-        Box {
-            Text(text = "Товар", modifier = Modifier
-                .clickable {
-                    expandProductPopup.value = true
-                }
-                .padding(4.dp)
-            )
-            productPopup(expandProductPopup)
-        }
+//        Box {
+//            Text(text = "Товар", modifier = Modifier
+//                .clickable {
+//                    expandProductPopup.value = true
+//                }
+//                .padding(4.dp)
+//            )
+//            productPopup(expandProductPopup)
+//        }
 
-        Box {
-            Text(text = "База Данных", modifier = Modifier
-                .clickable {
-                    expandDBPopup.value = true
-                }
-                .padding(4.dp)
-            )
-            dbPopup(expandDBPopup)
-        }
+//        Box {
+//            Text(text = "База Данных", modifier = Modifier
+//                .clickable {
+//                    expandDBPopup.value = true
+//                }
+//                .padding(4.dp)
+//            )
+//            dbPopup(expandDBPopup)
+//        }
 
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(end = 8f.dp),
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically
+        Box(
+            modifier = Modifier.fillMaxWidth().padding(end = 8f.dp).align(Alignment.CenterVertically)
         ) {
-            Text(text = "$selectedDB: $selectedDBTable", textAlign = TextAlign.Center)
+            Row(modifier = Modifier.fillMaxWidth().padding(end = 0f.dp), horizontalArrangement = Arrangement.End) {
+                Text(text = "$selectedDB: $selectedDBTable")
+            }
         }
     }
 

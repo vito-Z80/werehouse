@@ -2,16 +2,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import tables.insertRowDialog
+import windows.insertRowDialog
 import tables.steelRope
-import java.util.TreeSet
 
 
 @Composable
 fun tables() {
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        if (selectedDBTable.isNotEmpty()) {
+        if (selectedDB.isNotEmpty() && selectedDBTable.isNotEmpty()) {
             steelRope()
         }
 //        when (selectedDBTable) {
@@ -27,21 +26,5 @@ fun tables() {
     }
 
     insertRowDialog()
-
-}
-
-
-class AppTable {
-
-    val names = ArrayList<String>()
-    val fields = ArrayList<TreeSet<String>>()
-
-    fun addTable(tableName: String, vararg fields: String) {
-
-    }
-
-    fun addField(tableName: String, field: String) {
-
-    }
 
 }

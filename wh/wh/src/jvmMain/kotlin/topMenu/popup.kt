@@ -2,82 +2,21 @@ package topMenu
 
 import DB
 import DBField
-import androidx.compose.foundation.clickable
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import selectedDB
 import selectedDBTable
-import tables.createTableDialog
-import windows.createDbWindow
-import windows.newDBWindow
-import windows.newTableDBWindow
+import windows.createDatabaseDialog
+import windows.createTableDialog
 import java.io.File
-
-@Composable
-fun productPopup(expand: MutableState<Boolean>) {
-
-    DropdownMenu(
-        expanded = expand.value,
-        onDismissRequest = { expand.value = false }
-    ) {
-        DB.showTables(selectedDB).forEach {
-            DropdownMenuItem(onClick = {
-                expand.value = false
-                selectedDBTable = it
-            }) {
-                Text(text = it)
-            }
-        }
-    }
-}
-
-@Composable
-fun dbPopup(expand: MutableState<Boolean>) {
-
-    val dbState = remember { mutableStateOf(false) }
-    val tableState = remember { mutableStateOf(false) }
-
-    DropdownMenu(
-        expanded = expand.value,
-        onDismissRequest = { expand.value = false }
-    ) {
-        DropdownMenuItem(onClick = {
-            expand.value = false
-            dbState.value = true
-        }) {
-            Text(text = "Создать Базу Даных")
-        }
-        DropdownMenuItem(onClick = {
-            expand.value = false
-            tableState.value = true
-        }) {
-            Text(text = "Создать Таблицу")
-        }
-        DropdownMenuItem(onClick = {
-            expand.value = false
-        }) {
-            Text(text = "Добавить поле")
-        }
-    }
-
-    newDBWindow("Create new DB", dbState)
-    newTableDBWindow(selectedDB, "Create table", tableState)
-//    windowConfirm(title = "Fine", text = "База данных успешно создана.", wcf)
-
-}
 
 
 @Composable
 fun testPopup(expand: MutableState<Boolean>) {
 
-//    var it1 by remember { mutableStateOf(false) }
     val showDBNamesState = remember { mutableStateOf(false) }
     val showFieldsState = remember { mutableStateOf(false) }
-//    val showTableNamesState = remember { mutableStateOf(false) }
-
-    var position = remember { Pair(0f, 0f) }
-
     var dbNames by remember { mutableStateOf(listOf<String>()) }
 
     LaunchedEffect(showDBNamesState.value) {
@@ -104,11 +43,7 @@ fun testPopup(expand: MutableState<Boolean>) {
             Text("Поля")
             showFieldsSelection(showFieldsState)
         }
-
-
     }
-
-
 }
 
 @Composable
@@ -139,10 +74,8 @@ private fun showDBNames(
     showDBNamesState: MutableState<Boolean>,
     dbNames: List<String>,
 ) {
-//    val selectedDBName = remember { mutableStateOf("") }
 
-    val newTable = remember { mutableStateOf(false) }
-
+    val newDBDialog = remember { mutableStateOf(false) }
     DropdownMenu(
         expanded = showDBNamesState.value,
         onDismissRequest = {
@@ -153,7 +86,6 @@ private fun showDBNames(
             val showTableNamesState = remember { mutableStateOf(false) }
             DropdownMenuItem(onClick = {
                 showTableNamesState.value = true
-//                selectedDBName.value = dbN
             }) {
                 Text(dbN)
                 showTableNames(dbN, showTableNamesState)
@@ -162,28 +94,27 @@ private fun showDBNames(
         }
         Divider()
         DropdownMenuItem(onClick = {
-            newTable.value = true
+            showDBNamesState.value = false
+            newDBDialog.value = true
         }) {
             Text(text = "Создать БД")
-            createDbWindow(newTable)
         }
     }
+    createDatabaseDialog(newDBDialog)
 }
 
 @Composable
 private fun showTableNames(
     dbName: String,
-//    selectedDBName: MutableState<String>,
     showTableNamesState: MutableState<Boolean>,
 ) {
 
     var dbTables by remember { mutableStateOf(listOf<String>()) }
     val newTableNameDialog = remember { mutableStateOf(false) }
-//    var showTableNamesState by remember { mutableStateOf(false) }
 
     LaunchedEffect(showTableNamesState.value) {
         if (showTableNamesState.value) {
-            dbTables = DB.showTables(dbName)
+            dbTables = DB.tableNames(dbName)
             println("TABLES: ${dbTables.joinToString()}")
         }
     }
@@ -195,6 +126,7 @@ private fun showTableNames(
         dbTables.forEach { tableName ->
             DropdownMenuItem(onClick = {
                 showTableNamesState.value = false
+                selectedDB = dbName
                 selectedDBTable = tableName
             }) {
                 Text(tableName)
@@ -209,5 +141,5 @@ private fun showTableNames(
 
         }
     }
-    createTableDialog(newTableNameDialog)
+    createTableDialog(dbName, newTableNameDialog)
 }

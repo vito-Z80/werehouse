@@ -20,6 +20,7 @@ import insertRowDialogState
 import selectedDB
 import selectedDBTable
 import tableResult
+import windows.updateRowDialog
 
 @Composable
 fun steelRope() {
@@ -87,7 +88,8 @@ fun steelRope() {
         Button(onClick = {insertRowDialogState = true}){
             Text("ADD")
         }
-        detail(detailsIndex)
+        updateRowDialog(detailsIndex)
+//        detail(detailsIndex)
     }
 
 }
