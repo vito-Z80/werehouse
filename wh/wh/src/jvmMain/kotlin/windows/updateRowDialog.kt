@@ -27,9 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import divider
 import gson.G
-import gson.GSegment
-import gson.Seg
 import input.inputName
+import kotlinx.coroutines.withContext
 import selectedDB
 import selectedDBTable
 import stringToFloat
@@ -76,39 +75,44 @@ private fun mutableContent(rowIndex: MutableState<Int>) {
 
 
     val confirmEnabling = remember { mutableStateOf(false) }
-    var saving by remember { mutableStateOf(false) }
+    var isTableUpdate by remember { mutableStateOf(false) }
     val detailIndex = DBField.list.indexOfFirst { it.second.lowercase() == DETAILS.lowercase() }
     val tableDetail = remember { mutableStateOf(tableResult[rowIndex.value][detailIndex]) }
-    var segments = G.gson.fromJson(tableDetail.value, Seg::class.java)
+    var segments: MutableState<Seg?> = remember { mutableStateOf(G.gson.fromJson(tableDetail.value, Seg::class.java)) }
     val segmentValue = remember { mutableStateOf("0") }
 
 
-    // TODO не сохраняет gson в таблицу типом String. 1 раз за жизненный цикл сохраняет но в какой момент хз
-
-    LaunchedEffect(saving) {
-        if (saving) {
-            saving = false
-            if (segments == null) {
-                segments = Seg()
+    // TODO не сохраняет gson в таблицу типом String. ваще нихуя не сохраняет, но ексепшена нет, че за нах ????
+//    G.gson.fromJson(tableDetail.value, Seg::class.java)
+    LaunchedEffect(isTableUpdate) {
+        if (isTableUpdate) {
+            isTableUpdate = withContext(this.coroutineContext) {
+                val detailsIndex = DBField.list.indexOfFirst { it.second == DETAILS }
+                var segmentList =
+                    G.gson.fromJson(tableResult[rowIndex.value][detailsIndex], Seg::class.java)?.segments ?: listOf()
+                val s = Seg.Segment(
+                    "12/10/22", "Google", "ad ejejl ssdas,m ds", segmentValue.value.stringToFloat().second
+                )
+                segmentList = segmentList.plus(s)
+                val newSeg = Seg(segmentList)
+                val result = G.gson.toJson(newSeg)
+                println("UPDATE RESULT: $result")
+                tableResult[rowIndex.value][detailsIndex] = result
+                DB.updateDetails(selectedDB, selectedDBTable, result, rowIndex.value)
+//                DB.updateById(
+//                    selectedDB, selectedDBTable, rowIndex.value,
+//                    listOf(DETAILS),
+//                    listOf(result.trimMargin())
+//                )
+                rowIndex.value = -1
+                segments.value = newSeg
+                false
             }
-            val s = GSegment(
-                segmentValue.value.stringToFloat().second,
-                "12/10/22", "Google", "ad ejejl ssdas,m ds"
-            )
-            segments.segments.add(s)
-            println("add: ${segments.segments.joinToString()}")
-            val result = G.gson.toJson(segments)
-            DB.updateById(
-                selectedDB, selectedDBTable, rowIndex.value,
-                listOf(DETAILS),
-                listOf("'$result'")
-            )
-            rowIndex.value = -1
         }
     }
 
 
-    println("get: ${segments?.segments?.joinToString()}")
+    println("get: ${segments.value?.segments?.joinToString()}")
 
     val diameterIndex = DBField.list.indexOfFirst { it.second.lowercase() == DIAMETER.lowercase() }
     val diameter = remember { mutableStateOf(tableResult[rowIndex.value][diameterIndex]) }
@@ -176,7 +180,7 @@ private fun mutableContent(rowIndex: MutableState<Int>) {
         TextButton(
             enabled = confirmEnabling.value,
             onClick = {
-                saving = true
+                isTableUpdate = true
             }) {
             Text(text = "Подтвердить")
         }
@@ -185,27 +189,25 @@ private fun mutableContent(rowIndex: MutableState<Int>) {
 }
 
 @Composable
-fun segmentTable(segments: Seg?) {
-    if (segments != null) {
+fun segmentTable(segments: MutableState<Seg?>) {
 
-        LazyColumn {
+    LazyColumn {
 
-            items(items = segments.segments) {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
-                    Text(text = "${it.segment}")
-                    verticalDivider()
-                    Text(text = it.date)
-                    verticalDivider()
-                    Text(text = it.consumer)
-                    verticalDivider()
-                    Text(text = it.details)
-                }
+        items(items = segments.value?.segments ?: listOf()) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+                Text(text = "${it?.segment}")
+                verticalDivider()
+                Text(text = it?.date.toString())
+                verticalDivider()
+                Text(text = it?.consumer.toString())
+                verticalDivider()
+                Text(text = it?.details.toString())
             }
-
         }
 
-
     }
+
+
 }
 
 
@@ -215,4 +217,16 @@ private fun dialogTitle() {
         Text(text = "Редактирование")
     }
     Divider(modifier = Modifier.fillMaxWidth(0.75f).padding(8f.dp), color = Color.DarkGray)
+}
+
+
+data class Seg(
+    var segments: List<Segment?>,
+) {
+    data class Segment(
+        var consumer: String?, // Google
+        var date: String?, // 12/10/22
+        var details: String?, // ad ejejl ssdas,m ds
+        var segment: Float?, // 230.0
+    )
 }

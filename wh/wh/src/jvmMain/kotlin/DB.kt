@@ -12,7 +12,7 @@ object DB {
     private fun updateSqlById(tableName: String, fieldIndex: Int, fields: List<String>, data: List<Any>): String {
         val str = ArrayList<String>()
         fields.forEachIndexed { id, s ->
-            str.add("'$s' = ${data[id]}")
+            str.add("'$s' = '${data[id]}'")
         }
         return """UPDATE $tableName SET ${str.joinToString()} WHERE $ID = $fieldIndex;""".trimMargin()
     }
@@ -37,9 +37,8 @@ object DB {
     `${DBField.consumer.second}` text,
     `${DBField.arrival.second}` integer,
     `${DBField.expiration.second}` integer,
-    `${DBField.details.second}` json
+    `${DBField.details.second}` text
 );"""
-
 
 
     private const val driver = "jdbc:sqlite:"
@@ -86,6 +85,16 @@ object DB {
             }
             it?.close()
             return result.toList()
+        }
+    }
+
+
+    fun selectDetail(dbName: String, tableName: String, fieldIndex: Int): String? {
+        connect(dbName).let {
+            val sql = "SELECT $DETAILS FROM $tableName WHERE $fieldIndex = '$ID'"
+            val stm = it?.prepareStatement(sql)
+            val request = stm?.executeQuery()
+            return request?.getString(1)
         }
     }
 
@@ -160,6 +169,19 @@ object DB {
         }
     }
 
+
+    // TODO делать универчальную функцию обновления БД по этому шаблону.
+    fun updateDetails(dbName: String, tableName: String, json: String, index: Int) {
+        connect(dbName).let {
+            val ur = """UPDATE $tableName SET $DETAILS = ? WHERE $ID = ${index + 1}""".trimMargin()
+            println(ur)
+            val ps = it?.prepareStatement(ur)
+            ps?.setString(1, json)
+            ps?.executeUpdate()
+            it?.close()
+            println("$dbName:$tableName be updated")
+        }
+    }
 
     // https://www.sqlite.org/docs.html
     fun updateById(dbName: String, tableName: String, index: Int, fields: List<String>, data: List<Any>) {

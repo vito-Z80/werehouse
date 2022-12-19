@@ -4,9 +4,9 @@ import CONSUMER
 import DBField
 import DETAILS
 import DIAMETER
-import STANDARD
 import NUMBER
 import SEGMENT
+import STANDARD
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -18,12 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import gson.G
-import gson.GSegment
-import gson.Seg
 import input.input
 import input.inputSegmentConfirm
 import tableResult
 import verticalDivider
+import windows.Seg
 
 
 @Composable
@@ -39,7 +38,7 @@ fun detail(rowIndex: MutableState<Int>) {
             val detailsIndex = DBField.list.indexOfFirst { it.second.lowercase() == DETAILS.lowercase() }
             val data = tableResult[rowIndex.value][detailsIndex]
             if (data.isEmpty()) {
-                segments.value = Seg()
+                segments.value = Seg(listOf())
             } else {
                 segments.value = G.gson.fromJson(data,Seg::class.java)
             }
@@ -53,13 +52,13 @@ fun detail(rowIndex: MutableState<Int>) {
     LaunchedEffect(isSegmentAdded.value) {
         if (isSegmentAdded.value && rowIndex.value >= 0 && segments.value != null) {
             isSegmentAdded.value = false
-            val s = GSegment(
-                segment = segmentValue.value.toFloat(),
+            val s = Seg.Segment(
                 date = "02/02/22",
                 consumer = "huy s gory",
-                details = "всякая чушь"
+                details = "всякая чушь",
+                segment = segmentValue.value.toFloat()
             )
-            segments.value?.segments?.add(s)
+//            segments.value?.segments?.add(s)
             val detailsIndex = DBField.list.indexOfFirst { it.second.lowercase() == DETAILS.lowercase() }
             val gsonResult = G.gson.toJson(segments.value)
             tableResult[rowIndex.value][detailsIndex] = gsonResult
