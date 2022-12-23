@@ -25,7 +25,13 @@ const val COMING_DATE = "Дата прихода"
 const val OUTGOING_DATE = "Дата отдачи"
 const val DETAILS = "Детали"
 
+const val ON_VH = "На складе"
+const val OTPR = "Отправлено"
+const val STATE = "Состояние"
 const val SEGMENT = "Отрезок"
+
+const val CANCEL = "Отмена"
+const val CONFIRM = "Подтвердить"
 object DBField {
 
     val id = Pair(0, ID)
