@@ -7,25 +7,19 @@ object G {
 
     val gson = Gson()
 
-    fun deserialize(obj:Any?) {
+    fun deserialize(obj: Any?) {
 
     }
-
-    fun test() {
-//        val t = Seg()
-//        val gs = GSegment(100f,"23/12/23\n12:23","afklsdfksd", "other")
-//        t.segments.add(gs)
-//
-//
-//        val result = gson.toJson(t)
-//        println(result)
-//
-//        val obj = gson.fromJson(result,Seg::class.java)
-//        println(obj.segments[0].segment)
-    }
-
 }
 
-fun main() {
-    G.test()
+data class Seg(
+    var segments: List<Segment?>,
+) {
+    data class Segment(
+//        var consumer: String, // Google
+//        var date: String, // 12/10/22
+        var details: String, // ad ejejl ssdas,m ds
+        var segment: Float, // 230.0
+        var state: Boolean,
+    )
 }

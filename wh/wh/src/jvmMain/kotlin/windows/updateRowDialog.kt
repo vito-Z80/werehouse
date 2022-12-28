@@ -4,9 +4,7 @@ package windows
 
 import AMOUNT
 import CANCEL
-import COMING_DATE
 import CONFIRM
-import CONSUMER
 import DB
 import DBField
 import DETAILS
@@ -37,6 +35,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.rememberDialogState
 import divider
 import gson.G
+import gson.Seg
 import input.inputName
 import kotlinx.coroutines.withContext
 import selectedDB
@@ -50,7 +49,7 @@ fun updateRowDialog(rowIndex: MutableState<Int>) {
 
     val state = rememberDialogState(size = DpSize(512f.dp, 512f.dp))
 
-    // TODO code clean
+
 
     if (rowIndex.value >= 0) {
         val detailIndex = DBField.list.indexOfFirst { it.second.lowercase() == DETAILS.lowercase() }
@@ -62,6 +61,20 @@ fun updateRowDialog(rowIndex: MutableState<Int>) {
         val isTableUpdate = remember { mutableStateOf(false) }
         val leftValue = remember { mutableStateOf(0f) }
         val animationVisible = remember { mutableStateOf(false) }
+        // for mutable content
+        val amountIndex = DBField.list.indexOfFirst { it.second.lowercase() == AMOUNT.lowercase() }
+        val amount = tableResult[rowIndex.value][amountIndex].stringToFloat().second
+        val diameterIndex = DBField.list.indexOfFirst { it.second.lowercase() == DIAMETER.lowercase() }
+        val diameterEdit = remember { mutableStateOf(tableResult[rowIndex.value][diameterIndex]) }
+
+        val numberIndex = DBField.list.indexOfFirst { it.second.lowercase() == NUMBER.lowercase() }
+        val numberEdit = remember { mutableStateOf(tableResult[rowIndex.value][numberIndex]) }
+
+        val standardIndex = DBField.list.indexOfFirst { it.second.lowercase() == STANDARD.lowercase() }
+        val standardEdit = remember { mutableStateOf(tableResult[rowIndex.value][standardIndex]) }
+
+        val amountEdit = remember { mutableStateOf(tableResult[rowIndex.value][amountIndex]) }
+
         Dialog(
             onKeyEvent = {
                 if (it.key == Key.Escape) {
@@ -73,8 +86,6 @@ fun updateRowDialog(rowIndex: MutableState<Int>) {
             resizable = true,
             undecorated = true, state = state
         ) {
-            println(state.size.width)
-            println(state.size.height)
             Scaffold(
                 topBar = {
 //                    top(rowIndex, segments)
@@ -94,16 +105,62 @@ fun updateRowDialog(rowIndex: MutableState<Int>) {
                             if (animationVisible.value) {
                                 divider(width = 1f, color = Color.Black)
                             }
+                            // mutable data (diameter, number, standard, amount)
                             AnimatedVisibility(visible = animationVisible.value) {
-                                mutableContent(
-                                    rowIndex,
-                                    confirmEnabling,
-                                    isTableUpdate,
-                                    segments,
-                                    segmentValue,
-                                    leftValue
-                                )
+                                Column(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Spacer(Modifier.height(8f.dp))
+
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(text = DIAMETER)
+                                        inputName(text = diameterEdit, { diameterEdit.value.stringToFloat().first })
+                                    }
+
+
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(text = NUMBER)
+                                        inputName(text = numberEdit, { true })
+                                    }
+
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(text = STANDARD)
+                                        inputName(text = standardEdit, { true })
+                                    }
+
+
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(text = AMOUNT)
+                                        inputName(text = amountEdit, { amountEdit.value.stringToFloat().first })
+                                    }
+                                    Spacer(Modifier.height(8f.dp))
+                                }
+//                                mutableContent(
+//                                    rowIndex,
+//                                    confirmEnabling,
+//                                    isTableUpdate,
+//                                    segments,
+//                                    segmentValue,
+//                                    leftValue
+//                                )
                             }
+                            confirmEnabling.value =
+                                segmentValue.value.stringToFloat().first && segmentValue.value.stringToFloat().second > 0f &&
+                                        amountEdit.value.stringToFloat().first && amountEdit.value.stringToFloat().second > 0f &&
+                                        diameterEdit.value.stringToFloat().first && diameterEdit.value.stringToFloat().second > 0f
                             divider(width = 1f)
                             detailsList(segments)
                             divider(width = 1f)
@@ -359,16 +416,4 @@ private fun left(segments: MutableState<Seg?>, amount: Float, leftValue: Mutable
         r += it?.segment ?: 0f
     }
     leftValue.value = amount - r
-}
-
-data class Seg(
-    var segments: List<Segment?>,
-) {
-    data class Segment(
-//        var consumer: String, // Google
-//        var date: String, // 12/10/22
-        var details: String, // ad ejejl ssdas,m ds
-        var segment: Float, // 230.0
-        var state: Boolean,
-    )
 }
